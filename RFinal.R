@@ -2,8 +2,6 @@ library('ggplot2')
 library(plyr)
 
 
-
-
 #Checklist (! means something is unfinished or missing)
 #1.1
 #1.2
@@ -12,7 +10,7 @@ library(plyr)
 #Anova
 #2 Sample T-test
 #1Sample T-test
-#!Paired Sample T-test!
+#Paired Sample T-test
 #T confidence interval
 #!Conditional Probability!
 #Contingency Table
@@ -29,26 +27,56 @@ library(plyr)
 
 vehicles <- read.csv('data.csv')
 
+#First thing's first, the data needs to be cleaned up a bit
+
 #The 2017 Audi A6 has a highway mpg of 354, which is obviously a data entry error. 
 #For this reason, we are removing it from the data set.
+qqnorm(jitter(vehicles$highway.MPG, factor = 2))
 vehicles$highway.MPG[c(1120)]
 vehicles <- vehicles[-c(1120),]
 
+#There are a few vehicles with an unknown number of cylinders
+vehicles <- vehicles[!(is.na(vehicles$Engine.Cylinders)), ]
 
-#We may want to remove electric vehicles from our data set since they skew the data on mpg to the right pretty hard
-qqnorm(vehicles$highway.MPG)
-qqline(vehicles$highway.MPG)
-vehicles <- vehicles[!(vehicles$Engine.Fuel.Type == 'electric'), ]
-
+#Three vehicles don't have a fuel type
+vehicles <-  vehicles[!(vehicles$Engine.Fuel.Type == ''), ]
 
 #There are a few vehicles with unknown transmission types which we will be removing
 vehicles <- vehicles[!(vehicles$Transmission.Type == 'UNKNOWN'), ]
 vehicles$Transmission.Type <- factor(vehicles$Transmission.Type)
 
+#While the data on electric vehicles is valid, we consider electric vehicles to be 
+#sufficiently different from from conventional vehicles to be excluded from our analysis
+#Electric vehicles have a significantly higher than average fuel efficiency
+mean(vehicles$highway.MPG[vehicles$Engine.Fuel.Type == 'electric'])
+mean(vehicles$highway.MPG[!(vehicles$Engine.Fuel.Type == 'electric')])
+
+#Q-Q Plot if highway mpg before removing electric vehicles
+qqnorm(jitter(vehicles$highway.MPG, factor = 2))
+qqline(vehicles$highway.MPG)
+vehicles <- vehicles[!(vehicles$Engine.Fuel.Type == 'electric'), ]
+
+#Q-Q Plot if highway mpg after removing electric vehicles
+qqnorm(jitter(vehicles$highway.MPG, factor = 2))
+qqline(vehicles$highway.MPG)
+
+
+
+
+#Summaries of numerical data (narrow down to 5)
+summary(vehicles$Year)
+summary(vehicles$Engine.HP)
+summary(vehicles$Engine.Cylinders)
+summary(vehicles$highway.MPG)
+summary(vehicles$city.mpg)
+summary(vehicles$Popularity)
+summary(vehicles$MSRP)
+
 
 
 #Mosaic plot of vehicle transmission type and driven wheels
 mosaicplot(~ vehicles$Transmission.Type + vehicles$Driven_Wheels)
+
 
 
 #Barplot and Pie Chart
@@ -69,6 +97,7 @@ barplot + coord_polar('y', start = 0)
 
 
 #Grouped Barplot
+
 
 
 #Paired sample t-test
@@ -102,7 +131,6 @@ qqnorm(vehicles$city.mpg)
 qqline(vehicles$city.mpg)
 ggplot(data = vehicles, aes(x = city.mpg)) +
   geom_histogram()
-
 t.test(x = vehicles$city.mpg, y = vehicles$highway.MPG, alternative = 'two.sided')
 
 
@@ -111,19 +139,22 @@ t.test(x = vehicles$city.mpg, y = vehicles$highway.MPG, alternative = 'two.sided
 tbl <- table(vehicles$Transmission.Type, vehicles$Driven_Wheels)
 tbl
 
+
+
 #Chi Squared Test
 chisq.test(tbl)
-
 summary(lm(vehicles$city.mpg ~ vehicles$highway.MPG))
+
 
 
 #Scatterplot with regression line
 ggplot(vehicles, aes(x = highway.MPG, y = city.mpg)) + 
   geom_point() + 
   geom_abline()
-
 summary(vehicles$city.mpg)
 summary(vehicles$highway.MPG)
+
+
 
 #T- confidence interval
 #this confidence interval tell us that the true highway mpg average is between 26.09001 and 26.31684
@@ -133,7 +164,14 @@ mean(vehicles$highway.MPG)- error
 mean(vehicles$highway.MPG)+ error
 
 
+
 #Multilinear regression
 plot(x= vehicles$Driven_Wheels, y=vehicles$Engine.HP)
 model <- lm(vehicles$highway.MPG ~ vehicles$Engine.HP + vehicles$Driven_Wheels)
 summary(model)
+
+
+
+#Logistic Regression
+vehicles$Engine.Cylinders <- factor(vehicles$Engine.Cylinders);
+glm()
