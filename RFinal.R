@@ -41,6 +41,7 @@ vehicles <- vehicles[!(is.na(vehicles$Engine.Cylinders)), ]
 
 #Three vehicles don't have a fuel type
 vehicles <-  vehicles[!(vehicles$Engine.Fuel.Type == ''), ]
+vehicles <-  vehicles[!(is.na(vehicles$Engine.HP) ), ]
 
 #There are a few vehicles with unknown transmission types which we will be removing
 vehicles <- vehicles[!(vehicles$Transmission.Type == 'UNKNOWN'), ]
@@ -192,11 +193,16 @@ manual= 625+2922
 automatic = 8256
 table(vehicles$transmission.type, vehicles$highway.MPG)
 
-
+vehicles$Engine.HP[2]
 
 #Logistic Regression
 for (row in 1:nrow(vehicles)){
-  if(vehicles$Engine.HP[row]>299){vehicles$overthree[row]= 1} else {vehicles$overthree[row]= 0}
+  if(vehicles$Engine.HP[row]>=300) {
+    vehicles$overthree[row] = 1
+  }
+  else {
+    vehicles$overthree[row] = 0
+  }
 }
 logistic <- glm(overthree~ vehicles$highway.MPG, family= 'binomial', data = vehicles)
 plot(vehicles$highway.MPG, vehicles$overthree, main = 'Using fuel economy to predict if a vehicle has more than 300 hp', xlab= 'Fuel Ecomony', ylab= 'If a car has more than 300HP' )
