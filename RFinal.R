@@ -17,7 +17,7 @@ library(plyr)
 #Chi-Square for Independence
 #!2-Prop Z-test!
 #Multilinear Regression
-#!Logistic Regression!
+#Logistic Regression!
 
 
 
@@ -111,13 +111,16 @@ barplot(table(vehicles$Vehicle.Size), main= "Vehicle Size", xlab= "Size", ylab= 
 
 
 #Paired sample t-test
-t.test(compact$Engine.HP, midsize$Engine.HP)
+#This is a random sample of 50 of compact and midsize cars. 
+compacthp <- compact$Engine.HP[sample.int(compact$Engine.HP, 50)]
+midenginehp <- midsize$Engine.HP[sample.int(midsize$Engine.HP, 50)]
+t.test(compacthp, midenginehp, paired = TRUE)
 
 
 
 #One-sample t-test
+#Comparing to see if the true mean is equal to 250hp 
 t.test(vehicles$Engine.HP, mu = 250)
-
 
 
 #ANOVA hypothesis test to determine if there is a difference in highway MPG between vehicle makes
@@ -152,8 +155,8 @@ tbl
 #Chi Squared Test
 chisq.test(tbl)
 
+#Linear regression
 summary(lm(vehicles$city.mpg ~ vehicles$highway.MPG))
-
 
 
 #Scatterplot with regression line
@@ -189,6 +192,17 @@ manual= 625+2922
 automatic = 8256
 table(vehicles$transmission.type, vehicles$highway.MPG)
 
+
+
 #Logistic Regression
-vehicles$Engine.Cylinders <- factor(vehicles$Engine.Cylinders);
-glm()
+for (row in 1:nrow(vehicles)){
+  if(vehicles$Engine.HP[row]>299){vehicles$overthree[row]= 1} else {vehicles$overthree[row]= 0}
+}
+logistic <- glm(overthree~ vehicles$highway.MPG, family= 'binomial', data = vehicles)
+plot(vehicles$highway.MPG, vehicles$overthree, main = 'Using fuel economy to predict if a vehicle has more than 300 hp', xlab= 'Fuel Ecomony', ylab= 'If a car has more than 300HP' )
+abline(lm(overthree ~ vehicles$highway.MPG, data = vehicles))
+predY<- predict.glm(logistic, type="response")
+points(vehicles$highway.MPG, predY, col = 2, lty = 2)
+barplot(table(vehicles$overthree))
+
+
