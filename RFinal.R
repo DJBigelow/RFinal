@@ -24,7 +24,8 @@ library(plyr)
 #This data set was scraped from Edmunds and Twitter by the user Sam Keene on kaggle.com.
 #This data set is found on https://www.kaggle.com/CooperUnion/cardataset and was collected
 #December of 2017.
-
+getwd()
+setwd("C:/Users/koolm/documents/pricemaster/rfinal")
 vehicles <- read.csv('data.csv')
 
 #First thing's first, the data needs to be cleaned up a bit
@@ -51,7 +52,7 @@ vehicles$Transmission.Type <- factor(vehicles$Transmission.Type)
 mean(vehicles$highway.MPG[vehicles$Engine.Fuel.Type == 'electric'])
 mean(vehicles$highway.MPG[!(vehicles$Engine.Fuel.Type == 'electric')])
 
-#Q-Q Plot if highway mpg before removing electric vehicles
+#Q-Q Plot of highway mpg before removing electric vehicles
 qqnorm(jitter(vehicles$highway.MPG, factor = 2))
 qqline(vehicles$highway.MPG)
 vehicles <- vehicles[!(vehicles$Engine.Fuel.Type == 'electric'), ]
@@ -61,21 +62,28 @@ qqnorm(jitter(vehicles$highway.MPG, factor = 2))
 qqline(vehicles$highway.MPG)
 
 
-
-
 #Summaries of numerical data (narrow down to 5)
 summary(vehicles$Year)
+boxplot(vehicles$Year, col = "skyblue2", ylab= "Year")
 summary(vehicles$Engine.HP)
+boxplot(vehicles$Engine.HP, col = "orange", ylab = "Horsepower")
 summary(vehicles$Engine.Cylinders)
-summary(vehicles$highway.MPG)
-summary(vehicles$city.mpg)
-summary(vehicles$Popularity)
-summary(vehicles$MSRP)
 
+summary(vehicles$city.mpg)
+summary(vehicles$highway.MPG)
+corh= c("City", "Highway")
+boxplot(vehicles$city.mpg, vehicles$highway.MPG, names = corh, col="skyblue2", main = "Fuel Economy")
+
+
+summary(vehicles$MSRP)
+boxplot(vehicles$MSRP, col= "purple", ylab = "MSRP")
+
+hist(vehicles$highway.MPG, breaks= 8, col = "skyblue2", xlab="Highway MPG")
 
 
 #Mosaic plot of vehicle transmission type and driven wheels
-mosaicplot(~ vehicles$Transmission.Type + vehicles$Driven_Wheels)
+mosaicplot(~ vehicles$Transmission.Type + vehicles$Driven_Wheels, col= 2:13, 
+           xlab= "Transmission Type", ylab= "Driven Wheels", main = "Mosaic Plot")
 
 
 
@@ -95,6 +103,8 @@ barplot
 
 barplot + coord_polar('y', start = 0)
 
+################################################
+barplot(table(vehicles$Vehicle.Size), main= "Vehicle Size", xlab= "Size", ylab= "Count", col="deepskyblue")
 
 #Grouped Barplot
 
@@ -139,10 +149,9 @@ t.test(x = vehicles$city.mpg, y = vehicles$highway.MPG, alternative = 'two.sided
 tbl <- table(vehicles$Transmission.Type, vehicles$Driven_Wheels)
 tbl
 
-
-
 #Chi Squared Test
 chisq.test(tbl)
+
 summary(lm(vehicles$city.mpg ~ vehicles$highway.MPG))
 
 
@@ -158,7 +167,7 @@ summary(vehicles$highway.MPG)
 
 #T- confidence interval
 #this confidence interval tell us that the true highway mpg average is between 26.09001 and 26.31684
-hist(vehicles$highway.MPG)
+hist(vehicles$highway.MPG, col = "deepskyblue")
 error <- qt(0.975, df = nrow(vehicles)-1)* sd(vehicles$highway.MPG)/sqrt(nrow(vehicles))
 mean(vehicles$highway.MPG)- error
 mean(vehicles$highway.MPG)+ error
@@ -170,7 +179,15 @@ plot(x= vehicles$Driven_Wheels, y=vehicles$Engine.HP)
 model <- lm(vehicles$highway.MPG ~ vehicles$Engine.HP + vehicles$Driven_Wheels)
 summary(model)
 
-
+#two prop Z-test ##############################################################still needs work!
+#how many manual transmission cars get better than 30 mpg (highway)
+#how many automatic transmission cars get better than 30 mpg (highway)
+table(vehicles$Transmission.Type)
+table(vehicles$highway.MPG)
+#automated manual is included in manual because they work the same way for the most part. 
+manual= 625+2922
+automatic = 8256
+table(vehicles$transmission.type, vehicles$highway.MPG)
 
 #Logistic Regression
 vehicles$Engine.Cylinders <- factor(vehicles$Engine.Cylinders);
