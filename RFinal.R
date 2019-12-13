@@ -3,13 +3,16 @@ library(plyr)
 library(tinytex)
 
 #This data set was scraped from Edmunds and Twitter by the user Sam Keene on kaggle.com.
-#This data set is found on https://www.kaggle.com/CooperUnion/cardataset and was collected
-#December of 2017.
+#This data set is found on https://www.kaggle.com/CooperUnion/cardataset and was 
+#collected December of 2017.
 
-#In our data set we had 8 variables that are catagorical, they are make, model, engine fuel type, transmission type, drive system type (driven wheels),
-#market catagory, vehicle size, and, vehicle style. Our data set also had some discrete and continuous numerical variables, with the year, engine cylinders,
-#the number of doors, and popularity being discrete. The continuous numerical variables include engine horsepower, city and highway MPG, and MSRP. Ir also 
-#contains just under 12000 observations with the catagorical variables having a minimum of three levels. 
+#In our data set we had 8 variables that are catagorical, they are make, model, engine
+#fuel type, transmission type, drive system type (driven wheels),market catagory, vehicle 
+#size, and, vehicle style. Our data set also had some discrete and continuous numerical
+#variables, with the year, engine cylinders, the number of doors, and popularity being 
+#discrete. The continuous numerical variables include engine horsepower, city and highway 
+#MPG, and MSRP. It also contains just under 12000 observations with the catagorical 
+#variables having a minimum of three levels. 
 
 vehicles <- read.csv('data.csv')
 set.seed(0)
@@ -55,22 +58,24 @@ boxplot(vehicles$Year,
         col = "skyblue2", 
         ylab= "Year", 
         main = 'Vehicle Year')
-#If we look at the summary statistics and the box plot we can see that our data has a year range of 1990 to 2017 and 
-#has a mean of 2010. We can see that most of the vehicles in our dataset lie between 2007 and 2016. Since most of our
-#vehicles are pretty new, this could correlate to higher mean values for city and\or highway fuel economy.
+#If we look at the summary statistics and the box plot we can see that our data has a 
+#year range of 1990 to 2017 and has a mean of 2010. We can see that most of the vehicles
+#in our dataset lie between 2007 and 2016. Since most of our vehicles are pretty new, 
+#this could correlate to higher mean values for city and\or highway fuel economy.
 
 summary(vehicles$Engine.HP)
 boxplot(vehicles$Engine.HP, 
         col = "orange", 
         ylab = "Horsepower",
         main = 'Vehicle Horsepower')
-#If we look at our Horsepower boxplot we can see that most of our data set has between 170 and 300 horsepower with a 
-#mean of 249.8 horsepower. If we take a look at the fuel economy summaries and side by side boxplots in a later slide,
-#we can hypothesize that the horsepower range in this summary and the fuel economy values correlate
+#If we look at our Horsepower boxplot we can see that most of our data set has between 
+#170 and 300 horsepower with a mean of 249.8 horsepower. If we take a look at the fuel 
+#economy summaries and side by side boxplots in a later slide, we can hypothesize that
+#the horsepower range in this summary and the fuel economy values correlate
 
 summary(vehicles$Engine.Cylinders)
-#Looking at this summary we see the mean number of cylinders is 5.656, this low mean in cylinders could
-#be linked to our city and highway fuel economy.
+#Looking at this summary we see the mean number of cylinders is 5.656, this low mean
+#in cylinders could be linked to our city and highway fuel economy.
 
 summary(vehicles$city.mpg)
 summary(vehicles$highway.MPG)
@@ -80,18 +85,20 @@ boxplot(vehicles$city.mpg,
         names = corh, 
         col="skyblue2", 
         main = "Fuel Economy")
-#looking at city and highway fuel economy in our data set we see that our city mean is 19.22 and highway mean is 
-#26.22. These could be low due to relationships between higher numbers of engine cyliders correlating to lower fuel
-#economy numbers as well as a vehicle having more than two driven wheels, requiring more power to move, and therefore
-#using less fuel to move them. 
+#looking at city and highway fuel economy in our data set we see that our city mean
+#is 19.22 and highway mean is 26.22. These could be low due to relationships between
+#higher numbers of engine cyliders correlating to lower fuel economy numbers as well
+#as a vehicle having more than two driven wheels, requiring more power to move, and
+#therefore using less fuel to move them. 
 
 summary(vehicles$MSRP)
 boxplot(vehicles$MSRP, 
         col= "purple",
         ylab = "MSRP",
         main = 'Vehicle MSRP')
-#Here on our vehicle MSRP summary information it's interesing to note that there are a lot of outliers. This could possibly suggest that cost has either
-#no correlation to fuel economy or perhaps even a negative correlation. 
+#Here on our vehicle MSRP summary information it's interesing to note that there are
+#a lot of outliers. This could possibly suggest that cost has either no correlation 
+#to fuel economy or perhaps even a negative correlation. 
 
 hist(vehicles$highway.MPG, 
      breaks= 8, 
@@ -99,8 +106,9 @@ hist(vehicles$highway.MPG,
      xlab="Highway MPG",
      main = 'Distribution of Vehicle Highway MPG')
 
-#Here we have a histogram that shows how our highway fuel economies are distributed. The way the are distributed suggests that are cars are 
-#mostly compact and midsized cars. 
+#Here we have a histogram that shows how our highway fuel economies are distributed.
+#The way the are distributed suggests that are cars are mostly compact and midsized
+#cars. 
 
 ##################################################
 #Visual exploration of data
@@ -111,9 +119,10 @@ mosaicplot(~ vehicles$Transmission.Type + vehicles$Driven_Wheels,
            xlab= "Transmission Type", ylab= "Driven Wheels", 
            main = "Proportions of Driven Wheels and Transmission Type")
 
-#This Mosaic plot of our data gives us a nice breakdown of our transmission and driven wheel configurations and how 
-#proportional they are to each other. As you can see, most of vehicles in our dataset have an automatic transmission 
-#and most of those are front wheel drive. It's also interesting to note that there are no vehicles that are dedicated 
+#This Mosaic plot of our data gives us a nice breakdown of our transmission and driven
+#wheel configurations and how proportional they are to each other. As you can see, most
+#of vehicles in our dataset have an automatic transmission and most of those are front
+#wheel drive. It's also interesting to note that there are no vehicles that are dedicated 
 #four wheel drive vehicles that use automated manual transmissions. 
 
 
@@ -121,15 +130,16 @@ mosaicplot(~ vehicles$Transmission.Type + vehicles$Driven_Wheels,
 vehicles$Number.of.Doors = factor(vehicles$Number.of.Doors)
 pie(table(vehicles$Number.of.Doors), 
     main = 'Proportions of Number of Vehicle Doors')
-#This pie chart tells us how the numbers of vehicle doors are distributed in our data set, with four door vehicles
-#being the most popular.
+#This pie chart tells us how the numbers of vehicle doors are distributed in our data
+#set, with four door vehicles being the most popular.
 
 barplot(table(vehicles$Vehicle.Size), 
         main= "Distribution of Vehicles by Size", 
         xlab= "Size", 
         ylab= "Frequency",
         col="deepskyblue")
-#This bar plot tells us that compact and midsized vehicles are the most popular, with large vehicles trailing behind.
+#This bar plot tells us that compact and midsized vehicles are the most popular, with
+#large vehicles trailing behind.
 
 #Clustered Barplot
 vehicles$Engine.Cylinders = factor(vehicles$Engine.Cylinders)
@@ -138,9 +148,10 @@ barplot(table(vehicles$Engine.Cylinders, vehicles$Transmission.Type),
         legend.text = levels(vehicles$Engine.Cylinders),
         main = 'Driven Wheels and Transmission Type')
 
-#This bar plot tells us how the number of cylinders vehicles are distributed according to the transmission type. 
-#The four and six cylinder engines with automatic transmissions are by far the most popular. The number of six
-#cylider cars with automatic transmissions could contribute to the left skewness of the highway MPG histogram. 
+#This bar plot tells us how the number of cylinders vehicles are distributed according 
+#to the transmission type. The four and six cylinder engines with automatic transmissions
+#are by far the most popular. The number of six cylider cars with automatic transmissions
+#could contribute to the left skewness of the highway MPG histogram. 
 
 
 ################################################
@@ -161,7 +172,8 @@ t.test(vehicles$Engine.HP, mu = 250, alternative = 'greater')
 #Our P value of 0.5894 suggests that the true mean is not greater than 250 HP
 
 
-#ANOVA hypothesis test to determine if there is a difference in highway MPG between vehicle makes
+#ANOVA hypothesis test to determine if there is a difference in highway MPG between
+#vehicle makes
 qqnorm(vehicles$highway.MPG)
 qqline(vehicles$highway.MPG)
 
@@ -172,7 +184,8 @@ mpg_make_anova <-aov(highway.MPG ~ Make, data = vehicles)
 
 
 
-#Our p value is less than 2e-16, strongly suggesting that at least one vehicle make differs from the rest in terms of highway MPG
+#Our p value is less than 2e-16, strongly suggesting that at least one vehicle make
+#differs from the rest in terms of highway MPG
 summary(mpg_make_anova)
 
 
@@ -204,15 +217,17 @@ tbl
 
 #Chi Squared Test
 chisq.test(tbl)
-#The low p-value in our chi squared test for independence tells us that city and highway fuel economy are not independent.
+#The low p-value in our chi squared test for independence tells us that city and
+#highway fuel economy are not independent.
 
 
-#An additional Chi Squared test to find evidence of correlation between city and highway fuel economy.
+#An additional Chi Squared test to find evidence of correlation between city and
+#highway fuel economy.
 tbl2<- table(vehicles$city.mpg, vehicles$highway.MPG)
 tbl2
 chisq.test(tbl2)
-#The low p-value from this chi squared test suggests that there is a strong correlation between city and highway fuel economy in cars
-#from our data set.
+#The low p-value from this chi squared test suggests that there is a strong correlation
+#between city and highway fuel economy in cars from our data set.
 
 #Linear regression
 summary(lm(vehicles$city.mpg ~ vehicles$highway.MPG))
@@ -220,8 +235,8 @@ summary(lm(vehicles$city.mpg ~ vehicles$highway.MPG))
 
 
 
-#Scatterplot with regression line. We have a coefficient of regression of 0.8743, indicating that there is 
-#a strong relationship between highway and city MPG
+#Scatterplot with regression line. We have a coefficient of regression of 0.8743,
+#indicating that there is a strong relationship between highway and city MPG
 ggplot(vehicles, 
        aes(x = highway.MPG, y = city.mpg)) + 
   geom_point() + 
@@ -248,16 +263,17 @@ mean(vehicles$highway.MPG)+ error
 
 
 #Conditional probability that a compact vehicle has a horsepower of 300 or greater
-#The results tell us that there is a probability of ~0.1441 that any given compact vehicle has a horsepower of 300 or greater
+#The results tell us that there is a probability of ~0.1441 that any given compact
+#vehicle has a horsepower of 300 or greater
 mean(vehicles$Engine.HP[vehicles$Vehicle.Size == 'Compact'] >= 300)
 
 
 
 
-#Multilinear regression to see if if a vehicle's number of engine cylinders can be determined
-#by its horsepower and highway MPG.
-#The coefficient of corellation is 0.7405, suggesting a relationship between an engine's number of
-#cylinders and its vehicles horsepower and highway MPG, albeit not an extremely strong one
+#Multilinear regression to see if if a vehicle's number of engine cylinders can be
+#determined by its horsepower and highway MPG. The coefficient of corellation is 0.7405,
+#suggesting a relationship between an engine's number of cylinders and its vehicles 
+#horsepower and highway MPG, albeit not an extremely strong one.
 layout(matrix(c(1, 2, 3, 4), 2, 2 ))
 vehicles$Engine.Cylinders =  as.numeric(as.character(vehicles$Engine.Cylinders))
 model <- lm(vehicles$Engine.Cylinders ~ vehicles$Engine.HP  + vehicles$highway.MPG)
@@ -268,9 +284,9 @@ layout(1)
 
 
 
-#Two Proportion Z-test to determine if the true number of manual transmission vehicles is less
-#than the true number automatic transmission vehicles.
-#Our P-value is less than 2e^-16, very strongly suggesting that there are indeed less manual transmission
+#Two Proportion Z-test to determine if the true number of manual transmission vehicles
+#is less than the true number automatic transmission vehicles. Our P-value is less than
+#2e^-16, very strongly suggesting that there are indeed less manual transmission
 #vehicles than there are automatic transmission.
 manual = nrow(vehicles[vehicles$Transmission.Type == 'MANUAL', ]) + 
           nrow(vehicles[vehicles$Transmission.Type == 'AUTOMATED_MANUAL', ])
@@ -280,7 +296,8 @@ prop.test(x = c(manual, automatic), n = c(nrow(vehicles), nrow(vehicles)),altern
 
 
 
-#Logistic Regression to use highway MPG to predict if a car will have more than 300 horsepower.
+#Logistic Regression to use highway MPG to predict if a car will have more than
+#300 horsepower.
 for (row in 1:nrow(vehicles)){
   if(vehicles$Engine.HP[row] >= 300) {
     vehicles$overthree[row] = 1
