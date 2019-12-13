@@ -278,5 +278,10 @@ barplot(table(vehicles$overthree), main = 'Horsepower of Cars',
 #negative correlation with its vehicle's highway MPG and a positive correlation with 
 #horsepower.
 #
+#A logistic regression suggests that vehicles are more likely to achieve a highway MPG that
+#is greater than 30MPG have less than 300 horsepower and that high horsepower values 
+#are negatively correlated with highway fuel economy. Our Chi Squared test for indepencence 
+#that was ran on city and highway MPG would also suggest that high horsepower also is 
+#negatively correlated to city MPG. 
 ###########################################################
 #I have no clue what to write about the logistic regression.
