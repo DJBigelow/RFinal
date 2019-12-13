@@ -1,10 +1,16 @@
 library('ggplot2')
 library(plyr)
-
+library(tinytex)
 
 #This data set was scraped from Edmunds and Twitter by the user Sam Keene on kaggle.com.
 #This data set is found on https://www.kaggle.com/CooperUnion/cardataset and was collected
 #December of 2017.
+
+#In our data set we had 8 variables that are catagorical, they are make, model, engine fuel type, transmission type, drive system type (driven wheels),
+#market catagory, vehicle size, and, vehicle style. Our data set also had some discrete and continuous numerical variables, with the year, engine cylinders,
+#the number of doors, and popularity being discrete. The continuous numerical variables include engine horsepower, city and highway MPG, and MSRP. Ir also 
+#contains just under 12000 observations with the catagorical variables having a minimum of three levels. 
+
 vehicles <- read.csv('data.csv')
 set.seed(0)
 
@@ -93,6 +99,9 @@ hist(vehicles$highway.MPG,
      xlab="Highway MPG",
      main = 'Distribution of Vehicle Highway MPG')
 
+#Here we have a histogram that shows how our highway fuel economies are distributed. The way the are distributed suggests that are cars are 
+#mostly compact and midsized cars. 
+
 ##################################################
 #Visual exploration of data
 
@@ -102,19 +111,25 @@ mosaicplot(~ vehicles$Transmission.Type + vehicles$Driven_Wheels,
            xlab= "Transmission Type", ylab= "Driven Wheels", 
            main = "Proportions of Driven Wheels and Transmission Type")
 
+#This Mosaic plot of our data gives us a nice breakdown of our transmission and driven wheel configurations and how 
+#proportional they are to each other. As you can see, most of vehicles in our dataset have an automatic transmission 
+#and most of those are front wheel drive. It's also interesting to note that there are no vehicles that are dedicated 
+#four wheel drive vehicles that use automated manual transmissions. 
 
 
 #Barplot and Pie Chart
 vehicles$Number.of.Doors = factor(vehicles$Number.of.Doors)
 pie(table(vehicles$Number.of.Doors), 
     main = 'Proportions of Number of Vehicle Doors')
-
+#This pie chart tells us how the numbers of vehicle doors are distributed in our data set, with four door vehicles
+#being the most popular.
 
 barplot(table(vehicles$Vehicle.Size), 
         main= "Distribution of Vehicles by Size", 
         xlab= "Size", 
         ylab= "Frequency",
         col="deepskyblue")
+#This bar plot tells us that compact and midsized vehicles are the most popular, with large vehicles trailing behind.
 
 #Clustered Barplot
 vehicles$Engine.Cylinders = factor(vehicles$Engine.Cylinders)
@@ -123,6 +138,9 @@ barplot(table(vehicles$Engine.Cylinders, vehicles$Transmission.Type),
         legend.text = levels(vehicles$Engine.Cylinders),
         main = 'Driven Wheels and Transmission Type')
 
+#This bar plot tells us how the number of cylinders vehicles are distributed according to the transmission type. 
+#The four and six cylinder engines with automatic transmissions are by far the most popular. The number of six
+#cylider cars with automatic transmissions could contribute to the left skewness of the highway MPG histogram. 
 
 
 ################################################
@@ -167,7 +185,13 @@ t.test(x = vehicles$city.mpg, y = vehicles$highway.MPG, alternative = 'two.sided
 #Ho: The difference in means between city and highway fuel economy is zero
 #Ha: The difference in means betweencity and highway is not equal to zero
 #Alpha= 0.05
-#
+#Data is in the table
+#t=-59.702
+#p= 2.2e-16
+#reject Ho
+#We have sufficient evidence to reject the Ho and state that the mean MPG between
+#city and highway is not equal to zero. 
+
 
 
 
@@ -299,4 +323,4 @@ barplot(table(vehicles$overthree), main = 'Horsepower of Cars',
 #that was ran on city and highway MPG would also suggest that high horsepower also is 
 #negatively correlated to city MPG. 
 ###########################################################
-#I have no clue what to write about the logistic regression.
+
