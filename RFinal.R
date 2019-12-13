@@ -2,24 +2,6 @@ library('ggplot2')
 library(plyr)
 
 
-#Checklist (! means something is unfinished or missing)
-#1.1
-#1.2
-#!1.3!
-#!1.4!
-#Anova
-#2 Sample T-test
-#1Sample T-test
-#Paired Sample T-test
-#T confidence interval
-#!Conditional Probability!
-#Contingency Table
-#Chi-Square for Independence
-#!2-Prop Z-test!
-#Multilinear Regression
-#Logistic Regression!
-
-
 
 #This data set was scraped from Edmunds and Twitter by the user Sam Keene on kaggle.com.
 #This data set is found on https://www.kaggle.com/CooperUnion/cardataset and was collected
@@ -34,18 +16,24 @@ vehicles <- read.csv('data.csv')
 #For this reason, we are removing it from the data set.
 qqnorm(jitter(vehicles$highway.MPG, factor = 2))
 vehicles$highway.MPG[c(1120)]
-vehicles <- vehicles[-c(1120),]
+vehicles <- vehicles[-c(1120), ]
+
 
 #There are a few vehicles with an unknown number of cylinders
-vehicles <- vehicles[!(is.na(vehicles$Engine.Cylinders)), ]
 
-#Three vehicles don't have a fuel type
+
+#We removed any entries with incomplete data
+vehicles <- vehicles[!(is.na(vehicles$Engine.Cylinders)), ]
 vehicles <-  vehicles[!(vehicles$Engine.Fuel.Type == ''), ]
 vehicles <-  vehicles[!(is.na(vehicles$Engine.HP) ), ]
+vehicles <-  vehicles[!(is.na(vehicles$highway.MPG) ), ]
+vehicles <-  vehicles[!(is.na(vehicles$Transmission.Type) ), ]
 
-#There are a few vehicles with unknown transmission types which we will be removing
+
+#There are a few vehicles with unknown transmission types which we will also be removing
 vehicles <- vehicles[!(vehicles$Transmission.Type == 'UNKNOWN'), ]
 vehicles$Transmission.Type <- factor(vehicles$Transmission.Type)
+
 
 #While the data on electric vehicles is valid, we consider electric vehicles to be 
 #sufficiently different from from conventional vehicles to be excluded from our analysis
@@ -66,8 +54,10 @@ qqline(vehicles$highway.MPG)
 #Summaries of numerical data (narrow down to 5)
 summary(vehicles$Year)
 boxplot(vehicles$Year, col = "skyblue2", ylab= "Year")
+
 summary(vehicles$Engine.HP)
 boxplot(vehicles$Engine.HP, col = "orange", ylab = "Horsepower")
+
 summary(vehicles$Engine.Cylinders)
 
 summary(vehicles$city.mpg)
@@ -75,12 +65,13 @@ summary(vehicles$highway.MPG)
 corh= c("City", "Highway")
 boxplot(vehicles$city.mpg, vehicles$highway.MPG, names = corh, col="skyblue2", main = "Fuel Economy")
 
-
 summary(vehicles$MSRP)
 boxplot(vehicles$MSRP, col= "purple", ylab = "MSRP")
 
 hist(vehicles$highway.MPG, breaks= 8, col = "skyblue2", xlab="Highway MPG")
 
+##################################################
+#Visual exploration of data
 
 #Mosaic plot of vehicle transmission type and driven wheels
 mosaicplot(~ vehicles$Transmission.Type + vehicles$Driven_Wheels, col= 2:13, 
@@ -89,25 +80,24 @@ mosaicplot(~ vehicles$Transmission.Type + vehicles$Driven_Wheels, col= 2:13,
 
 
 #Barplot and Pie Chart
-compact <- vehicles[vehicles$Vehicle.Size == 'Compact',]
-midsize <- vehicles[vehicles$Vehicle.Size == 'Midsize',]
-large <- vehicles[vehicles$Vehicle.Size == 'Large',]
+vehicles$Number.of.Doors = factor(vehicles$Number.of.Doors)
+pie(table(vehicles$Number.of.Doors), main = 'Number of Vehicle Doors')
 
-vhc_size <- nrow(vehicles)
 
-df <- data.frame(group = c('Compact', 'Midsize', 'Large'),
-                 value = c(100*nrow(compact) / vhc_size, 100*nrow(midsize) / vhc_size, 100*nrow(large) / vhc_size))
+barplot(table(vehicles$Vehicle.Size), 
+        main= "Vehicle Size", xlab= "Size", ylab= "Count", col="deepskyblue")
 
-barplot <- ggplot(df, aes(x = '', y = value, fill = group)) + 
-  geom_bar(width = 1, stat = 'identity')
-barplot 
+#Clustered Barplot
+vehicles$Engine.Cylinders = factor(vehicles$Engine.Cylinders)
+barplot(table(vehicles$Engine.Cylinders, vehicles$Transmission.Type), 
+        beside = TRUE,
+        legend.text = levels(vehicles$Engine.Cylinders),
+        main = 'Driven Wheels and Transmission Type')
 
-barplot + coord_polar('y', start = 0)
+
 
 ################################################
-barplot(table(vehicles$Vehicle.Size), main= "Vehicle Size", xlab= "Size", ylab= "Count", col="deepskyblue")
 
-#Grouped Barplot
 
 
 
@@ -119,9 +109,10 @@ t.test(compacthp, midenginehp, paired = TRUE)
 
 
 
-#One-sample t-test
-#Comparing to see if the true mean is equal to 250hp 
-t.test(vehicles$Engine.HP, mu = 250)
+#One-sample t-test to determine if the true mean of 
+#Comparing to see if the true mean is greater than 250
+t.test(vehicles$Engine.HP, mu = 250, alternative = 'greater')
+#Our P value of 0.5894 suggests that the true mean is not greater than 250 HP
 
 
 #ANOVA hypothesis test to determine if there is a difference in highway MPG between vehicle makes
@@ -140,12 +131,15 @@ summary(mpg_make_anova)
 
 
 
-#Two-sample t-test
+
+#Two-sample t-test to determine if the means of city mpg and highway mpg are equal
 qqnorm(vehicles$city.mpg)
 qqline(vehicles$city.mpg)
 ggplot(data = vehicles, aes(x = city.mpg)) +
-  geom_histogram()
+  geom_histogram() + ggtitle('Distribution of Vehicle City MPG')
 t.test(x = vehicles$city.mpg, y = vehicles$highway.MPG, alternative = 'two.sided')
+#
+
 
 
 
@@ -153,24 +147,34 @@ t.test(x = vehicles$city.mpg, y = vehicles$highway.MPG, alternative = 'two.sided
 tbl <- table(vehicles$Transmission.Type, vehicles$Driven_Wheels)
 tbl
 
+
+
+
 #Chi Squared Test
 chisq.test(tbl)
+
+
+
 
 #Linear regression
 summary(lm(vehicles$city.mpg ~ vehicles$highway.MPG))
 
 
-#Scatterplot with regression line
+
+
+#Scatterplot with regression line. We have a coefficient of regression of 0.8743, indicating that there is 
+#a strong relationship between highway and city MPG
 ggplot(vehicles, aes(x = highway.MPG, y = city.mpg)) + 
   geom_point() + 
-  geom_abline()
-summary(vehicles$city.mpg)
-summary(vehicles$highway.MPG)
+  geom_abline() +
+  ggtitle('Scatterplot of Vehicle Highway MPG')
+summary(lm(vehicles$highway.MPG ~ vehicles$city.mpg + vehicles$Driven_Wheels))
 
 
 
-#T- confidence interval
-#this confidence interval tell us that the true highway mpg average is between 26.09001 and 26.31684
+#T-confidence interval
+#This confidence interval tell us that there is a probability of 0.975 that 
+#the true highway mpg average is between 26.10324 and 26.33089
 hist(vehicles$highway.MPG, col = "deepskyblue")
 error <- qt(0.975, df = nrow(vehicles)-1)* sd(vehicles$highway.MPG)/sqrt(nrow(vehicles))
 mean(vehicles$highway.MPG)- error
@@ -178,26 +182,44 @@ mean(vehicles$highway.MPG)+ error
 
 
 
-#Multilinear regression
-plot(x= vehicles$Driven_Wheels, y=vehicles$Engine.HP)
-model <- lm(vehicles$highway.MPG ~ vehicles$Engine.HP + vehicles$Driven_Wheels)
+#Conditional probability that a compact vehicle has a horsepower of 300 or greater
+#The results tell us that there is a probability of ~0.1441 that any given compact vehicle has a horsepower of 300 or greater
+mean(vehicles$Engine.HP[vehicles$Vehicle.Size == 'Compact'] >= 300)
+
+
+
+
+#Multilinear regression to see if if a vehicle's number of engine cylinders can be determined
+#by its horsepower and highway MPG.
+#The coefficient of corellation is 0.7405, suggesting a relationship between an engine's number of
+#cylinders and its vehicles horsepower and highway MPG, albeit not an extremely strong one
+layout(matrix(c(1, 2, 3, 4), 2, 2 ))
+vehicles$Engine.Cylinders =  as.numeric(as.character(vehicles$Engine.Cylinders))
+model <- lm(vehicles$Engine.Cylinders ~ vehicles$Engine.HP  + vehicles$highway.MPG)
+plot(model)
 summary(model)
+layout(1)
 
-#two prop Z-test ##############################################################still needs work!
-#how many manual transmission cars get better than 30 mpg (highway)
-#how many automatic transmission cars get better than 30 mpg (highway)
-table(vehicles$Transmission.Type)
-table(vehicles$highway.MPG)
-#automated manual is included in manual because they work the same way for the most part. 
-manual= 625+2922
-automatic = 8256
-table(vehicles$transmission.type, vehicles$highway.MPG)
 
-vehicles$Engine.HP[2]
 
-#Logistic Regression
+
+#Two Proportion Z-test to determine if the true number of manual transmission vehicles is less
+#than the true number automatic transmission vehicles.
+#Our P-value is less than 2e^-16, very strongly suggesting that there are indeed less manual transmission
+#vehicles than there are automatic transmission.
+manual = nrow(vehicles[vehicles$Transmission.Type == 'MANUAL', ]) + 
+          nrow(vehicles[vehicles$Transmission.Type == 'AUTOMATED_MANUAL', ])
+automatic = nrow(vehicles) - manual
+prop.test(x = c(manual, automatic), n = c(nrow(vehicles), nrow(vehicles)),alternative = 'less')
+
+
+
+
+
+
+#Logistic Regression to use highway MPG to predict if a car will have more than 300 horsepower.
 for (row in 1:nrow(vehicles)){
-  if(vehicles$Engine.HP[row]>=300) {
+  if(vehicles$Engine.HP[row] >= 300) {
     vehicles$overthree[row] = 1
   }
   else {
@@ -205,10 +227,13 @@ for (row in 1:nrow(vehicles)){
   }
 }
 logistic <- glm(overthree~ vehicles$highway.MPG, family= 'binomial', data = vehicles)
+summary(logistic)
 plot(vehicles$highway.MPG, vehicles$overthree, main = 'Using fuel economy to predict if a vehicle has more than 300 hp', xlab= 'Fuel Ecomony', ylab= 'If a car has more than 300HP' )
 abline(lm(overthree ~ vehicles$highway.MPG, data = vehicles))
 predY<- predict.glm(logistic, type="response")
 points(vehicles$highway.MPG, predY, col = 2, lty = 2)
-barplot(table(vehicles$overthree))
+barplot(table(vehicles$overthree), main = 'Horsepower of Cars', 
+        names.arg = c('Less Than 300 HP', '300 or More HP'),
+        ylab= 'Frequency')
 
 
