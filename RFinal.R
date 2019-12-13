@@ -2,56 +2,48 @@ library('ggplot2')
 library(plyr)
 
 
-
 #This data set was scraped from Edmunds and Twitter by the user Sam Keene on kaggle.com.
 #This data set is found on https://www.kaggle.com/CooperUnion/cardataset and was collected
 #December of 2017.
-getwd()
-setwd("C:/Users/koolm/documents/pricemaster/rfinal")
 vehicles <- read.csv('data.csv')
+set.seed(0)
 
 #First thing's first, the data needs to be cleaned up a bit
-
 #The 2017 Audi A6 has a highway mpg of 354, which is obviously a data entry error. 
 #For this reason, we are removing it from the data set.
-qqnorm(jitter(vehicles$highway.MPG, factor = 2))
 vehicles$highway.MPG[c(1120)]
 vehicles <- vehicles[-c(1120), ]
 
 
-#There are a few vehicles with an unknown number of cylinders
-
-
 #We removed any entries with incomplete data
 vehicles <- vehicles[!(is.na(vehicles$Engine.Cylinders)), ]
-vehicles <-  vehicles[!(vehicles$Engine.Fuel.Type == ''), ]
-vehicles <-  vehicles[!(is.na(vehicles$Engine.HP) ), ]
-vehicles <-  vehicles[!(is.na(vehicles$highway.MPG) ), ]
-vehicles <-  vehicles[!(is.na(vehicles$Transmission.Type) ), ]
+vehicles <- vehicles[!(vehicles$Engine.Fuel.Type == ''), ]
+vehicles <- vehicles[!(is.na(vehicles$Engine.HP) ), ]
 
 
-#There are a few vehicles with unknown transmission types which we will also be removing
+
+#There are a few vehicles with unknown transmission types which we also removed
 vehicles <- vehicles[!(vehicles$Transmission.Type == 'UNKNOWN'), ]
 vehicles$Transmission.Type <- factor(vehicles$Transmission.Type)
 
 
 #While the data on electric vehicles is valid, we consider electric vehicles to be 
 #sufficiently different from from conventional vehicles to be excluded from our analysis
-#Electric vehicles have a significantly higher than average fuel efficiency
+#Electric vehicles have a significantly higher than average fuel efficiency.
 mean(vehicles$highway.MPG[vehicles$Engine.Fuel.Type == 'electric'])
 mean(vehicles$highway.MPG[!(vehicles$Engine.Fuel.Type == 'electric')])
 
 #Q-Q Plot of highway mpg before removing electric vehicles
-qqnorm(jitter(vehicles$highway.MPG, factor = 2))
+qqnorm(jitter(vehicles$highway.MPG, factor = 2), main = 'Q-Q Plot With Electric Vehicles')
 qqline(vehicles$highway.MPG)
 vehicles <- vehicles[!(vehicles$Engine.Fuel.Type == 'electric'), ]
 
 #Q-Q Plot if highway mpg after removing electric vehicles
-qqnorm(jitter(vehicles$highway.MPG, factor = 2))
+qqnorm(jitter(vehicles$highway.MPG, factor = 2), main = 'Q-Q Plot Without Electric Vehicles')
 qqline(vehicles$highway.MPG)
 
 
-#Summaries of numerical data (narrow down to 5)
+#Summaries of numerical variables
 summary(vehicles$Year)
 boxplot(vehicles$Year, col = "skyblue2", ylab= "Year")
 
@@ -102,10 +94,10 @@ barplot(table(vehicles$Engine.Cylinders, vehicles$Transmission.Type),
 
 
 #Paired sample t-test
-#This is a random sample of 50 of compact and midsize cars. 
-compacthp <- compact$Engine.HP[sample.int(compact$Engine.HP, 50)]
-midenginehp <- midsize$Engine.HP[sample.int(midsize$Engine.HP, 50)]
-t.test(compacthp, midenginehp, paired = TRUE)
+#This is a random sample of 1000 compact and midsize cars. 
+compacthp <- sample(vehicles[vehicles$Vehicle.Size == 'Compact', ]$Engine.HP, 1000)
+midsizehp <- sample(vehicles[vehicles$Vehicle.Size == 'Midsize', ]$Engine.HP, 1000)
+t.test(compacthp, midsizehp, paired = TRUE, alternative = 'less')
 
 
 
@@ -143,7 +135,7 @@ t.test(x = vehicles$city.mpg, y = vehicles$highway.MPG, alternative = 'two.sided
 
 
 
-#Contingency Table
+#Contingency Table of vehicle transmission type and driven wheels
 tbl <- table(vehicles$Transmission.Type, vehicles$Driven_Wheels)
 tbl
 
@@ -237,3 +229,22 @@ barplot(table(vehicles$overthree), main = 'Horsepower of Cars',
         ylab= 'Frequency')
 
 
+#The most initially obvious trend in our data was the significantly above-average. 
+#The mean highway MPG of electric vehicles was 99.59 while the mean highway MPG
+#of non-electric vehicles was only 26.23. This immediately concerned as, as having
+#a small class of radically different vehicles would skew any analysis on vehicle 
+#fuel efficiency. As such, we decided that our analysis of the dataset would not 
+#include electric vehicles.
+#
+#Through several hypothesis tests, we found that the true difference in mean horsepower
+#of compact and midsize vehicles are less than zero, that highway mpg differs by vehicle
+#make, and that the mean city and highway mpg's were not equal. It was also found that 
+#vehicle transmission type and driven wheels are related and that true number of manual
+#vehicles is less than the true number of automatic vehicles.
+#
+#A multi-linear regression suggested that an engine's number of cylinders had a 
+#negative correlation with its vehicle's highway MPG and a positive correlation with 
+#horsepower.
+#
+###########################################################
+#I have no clue what to write about the logistic regression.
