@@ -45,39 +45,63 @@ qqline(vehicles$highway.MPG)
 
 #Summaries of numerical variables
 summary(vehicles$Year)
-boxplot(vehicles$Year, col = "skyblue2", ylab= "Year")
+boxplot(vehicles$Year, 
+        col = "skyblue2", 
+        ylab= "Year", 
+        main = 'Vehicle Year')
+
 
 summary(vehicles$Engine.HP)
-boxplot(vehicles$Engine.HP, col = "orange", ylab = "Horsepower")
+boxplot(vehicles$Engine.HP, 
+        col = "orange", 
+        ylab = "Horsepower",
+        main = 'Vehicle Horsepower')
 
 summary(vehicles$Engine.Cylinders)
 
 summary(vehicles$city.mpg)
 summary(vehicles$highway.MPG)
 corh= c("City", "Highway")
-boxplot(vehicles$city.mpg, vehicles$highway.MPG, names = corh, col="skyblue2", main = "Fuel Economy")
+boxplot(vehicles$city.mpg, 
+        vehicles$highway.MPG, 
+        names = corh, 
+        col="skyblue2", 
+        main = "Fuel Economy")
 
 summary(vehicles$MSRP)
-boxplot(vehicles$MSRP, col= "purple", ylab = "MSRP")
+boxplot(vehicles$MSRP, 
+        col= "purple",
+        ylab = "MSRP",
+        main = 'Vehicle MSRP')
 
-hist(vehicles$highway.MPG, breaks= 8, col = "skyblue2", xlab="Highway MPG")
+hist(vehicles$highway.MPG, 
+     breaks= 8, 
+     col = "skyblue2", 
+     xlab="Highway MPG",
+     main = 'Distribution of Vehicle Highway MPG')
 
 ##################################################
 #Visual exploration of data
 
 #Mosaic plot of vehicle transmission type and driven wheels
-mosaicplot(~ vehicles$Transmission.Type + vehicles$Driven_Wheels, col= 2:13, 
-           xlab= "Transmission Type", ylab= "Driven Wheels", main = "Mosaic Plot")
+mosaicplot(~ vehicles$Transmission.Type + vehicles$Driven_Wheels, 
+           col= 2:13, 
+           xlab= "Transmission Type", ylab= "Driven Wheels", 
+           main = "Proportions of Driven Wheels and Transmission Type")
 
 
 
 #Barplot and Pie Chart
 vehicles$Number.of.Doors = factor(vehicles$Number.of.Doors)
-pie(table(vehicles$Number.of.Doors), main = 'Number of Vehicle Doors')
+pie(table(vehicles$Number.of.Doors), 
+    main = 'Proportions of Number of Vehicle Doors')
 
 
 barplot(table(vehicles$Vehicle.Size), 
-        main= "Vehicle Size", xlab= "Size", ylab= "Count", col="deepskyblue")
+        main= "Distribution of Vehicles by Size", 
+        xlab= "Size", 
+        ylab= "Frequency",
+        col="deepskyblue")
 
 #Clustered Barplot
 vehicles$Engine.Cylinders = factor(vehicles$Engine.Cylinders)
@@ -125,10 +149,8 @@ summary(mpg_make_anova)
 
 
 #Two-sample t-test to determine if the means of city mpg and highway mpg are equal
-qqnorm(vehicles$city.mpg)
+qqnorm(jitter(vehicles$city.mpg, 2), main = 'Q-Q Plot for Vehicle City MPG')
 qqline(vehicles$city.mpg)
-ggplot(data = vehicles, aes(x = city.mpg)) +
-  geom_histogram() + ggtitle('Distribution of Vehicle City MPG')
 t.test(x = vehicles$city.mpg, y = vehicles$highway.MPG, alternative = 'two.sided')
 #
 
@@ -156,10 +178,14 @@ summary(lm(vehicles$city.mpg ~ vehicles$highway.MPG))
 
 #Scatterplot with regression line. We have a coefficient of regression of 0.8743, indicating that there is 
 #a strong relationship between highway and city MPG
-ggplot(vehicles, aes(x = highway.MPG, y = city.mpg)) + 
+ggplot(vehicles, 
+       aes(x = highway.MPG, y = city.mpg)) + 
   geom_point() + 
   geom_abline() +
-  ggtitle('Scatterplot of Vehicle Highway MPG')
+  xlab('Highway MPG') + 
+  ylab('City MPG') +
+  ggtitle('Highway MPG vs City MPG') 
+  
 summary(lm(vehicles$highway.MPG ~ vehicles$city.mpg + vehicles$Driven_Wheels))
 
 
@@ -167,7 +193,10 @@ summary(lm(vehicles$highway.MPG ~ vehicles$city.mpg + vehicles$Driven_Wheels))
 #T-confidence interval
 #This confidence interval tell us that there is a probability of 0.975 that 
 #the true highway mpg average is between 26.10324 and 26.33089
-hist(vehicles$highway.MPG, col = "deepskyblue")
+hist(vehicles$highway.MPG,
+     col = "deepskyblue",
+     main = 'Distribution of Vehicle Highway MPGs',
+     xlab = 'Highway MPG')
 error <- qt(0.975, df = nrow(vehicles)-1)* sd(vehicles$highway.MPG)/sqrt(nrow(vehicles))
 mean(vehicles$highway.MPG)- error
 mean(vehicles$highway.MPG)+ error
@@ -203,8 +232,6 @@ manual = nrow(vehicles[vehicles$Transmission.Type == 'MANUAL', ]) +
           nrow(vehicles[vehicles$Transmission.Type == 'AUTOMATED_MANUAL', ])
 automatic = nrow(vehicles) - manual
 prop.test(x = c(manual, automatic), n = c(nrow(vehicles), nrow(vehicles)),alternative = 'less')
-
-
 
 
 
