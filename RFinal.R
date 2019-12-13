@@ -137,7 +137,6 @@ midsizehp <- sample(vehicles[vehicles$Vehicle.Size == 'Midsize', ]$Engine.HP, 10
 t.test(compacthp, midsizehp, paired = TRUE, alternative = 'less')
 
 
-
 #One-sample t-test to determine if the true mean of 
 #Comparing to see if the true mean is greater than 250
 t.test(vehicles$Engine.HP, mu = 250, alternative = 'greater')
@@ -165,6 +164,9 @@ summary(mpg_make_anova)
 qqnorm(jitter(vehicles$city.mpg, 2), main = 'Q-Q Plot for Vehicle City MPG')
 qqline(vehicles$city.mpg)
 t.test(x = vehicles$city.mpg, y = vehicles$highway.MPG, alternative = 'two.sided')
+#Ho: The difference in means between city and highway fuel economy is zero
+#Ha: The difference in means betweencity and highway is not equal to zero
+#Alpha= 0.05
 #
 
 
