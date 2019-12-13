@@ -138,15 +138,20 @@ t.test(x = vehicles$city.mpg, y = vehicles$highway.MPG, alternative = 'two.sided
 #Contingency Table of vehicle transmission type and driven wheels
 tbl <- table(vehicles$Transmission.Type, vehicles$Driven_Wheels)
 tbl
-
-
+#Here we have a contingency table that we will be using for our Chi Squared test
 
 
 #Chi Squared Test
 chisq.test(tbl)
+#The low p-value in our chi squared test for independence tells us that city and highway fuel economy are not independent.
 
 
-
+#An additional Chi Squared test to find evidence of correlation between city and highway fuel economy.
+tbl2<- table(vehicles$city.mpg, vehicles$highway.MPG)
+tbl2
+chisq.test(tbl2)
+#The low p-value from this chi squared test suggests that there is a strong correlation between city and highway fuel economy in cars
+#from our data set.
 
 #Linear regression
 summary(lm(vehicles$city.mpg ~ vehicles$highway.MPG))
@@ -231,7 +236,7 @@ barplot(table(vehicles$overthree), main = 'Horsepower of Cars',
 
 #The most initially obvious trend in our data was the significantly above-average. 
 #The mean highway MPG of electric vehicles was 99.59 while the mean highway MPG
-#of non-electric vehicles was only 26.23. This immediately concerned as, as having
+#of non-electric vehicles was only 26.23. This immediately concerned, as having
 #a small class of radically different vehicles would skew any analysis on vehicle 
 #fuel efficiency. As such, we decided that our analysis of the dataset would not 
 #include electric vehicles.
