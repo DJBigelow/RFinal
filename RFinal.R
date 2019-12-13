@@ -49,15 +49,22 @@ boxplot(vehicles$Year,
         col = "skyblue2", 
         ylab= "Year", 
         main = 'Vehicle Year')
-
+#If we look at the summary statistics and the box plot we can see that our data has a year range of 1990 to 2017 and 
+#has a mean of 2010. We can see that most of the vehicles in our dataset lie between 2007 and 2016. Since most of our
+#vehicles are pretty new, this could correlate to higher mean values for city and\or highway fuel economy.
 
 summary(vehicles$Engine.HP)
 boxplot(vehicles$Engine.HP, 
         col = "orange", 
         ylab = "Horsepower",
         main = 'Vehicle Horsepower')
+#If we look at our Horsepower boxplot we can see that most of our data set has between 170 and 300 horsepower with a 
+#mean of 249.8 horsepower. If we take a look at the fuel economy summaries and side by side boxplots in a later slide,
+#we can hypothesize that the horsepower range in this summary and the fuel economy values correlate
 
 summary(vehicles$Engine.Cylinders)
+#Looking at this summary we see the mean number of cylinders is 5.656, this low mean in cylinders could
+#be linked to our city and highway fuel economy.
 
 summary(vehicles$city.mpg)
 summary(vehicles$highway.MPG)
@@ -67,12 +74,18 @@ boxplot(vehicles$city.mpg,
         names = corh, 
         col="skyblue2", 
         main = "Fuel Economy")
+#looking at city and highway fuel economy in our data set we see that our city mean is 19.22 and highway mean is 
+#26.22. These could be low due to relationships between higher numbers of engine cyliders correlating to lower fuel
+#economy numbers as well as a vehicle having more than two driven wheels, requiring more power to move, and therefore
+#using less fuel to move them. 
 
 summary(vehicles$MSRP)
 boxplot(vehicles$MSRP, 
         col= "purple",
         ylab = "MSRP",
         main = 'Vehicle MSRP')
+#Here on our vehicle MSRP summary information it's interesing to note that there are a lot of outliers. This could possibly suggest that cost has either
+#no correlation to fuel economy or perhaps even a negative correlation. 
 
 hist(vehicles$highway.MPG, 
      breaks= 8, 
